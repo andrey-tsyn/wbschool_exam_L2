@@ -1,5 +1,11 @@
 package main
 
+import (
+	"slices"
+	"sort"
+	"strings"
+)
+
 /*
 === Поиск анаграмм по словарю ===
 
@@ -19,6 +25,29 @@ package main
 Программа должна проходить все тесты. Код должен проходить проверки go vet и golint.
 */
 
-func main() {
+func GetAnagrams(strs []string) map[string][]string {
+	m := make(map[string][]string)
 
+	for _, val := range strs {
+		val = strings.ToLower(val)
+		key := sortString(val)
+		m[key] = append(m[key], val)
+	}
+
+	for key, val := range m {
+		if len(val) < 2 {
+			delete(m, key)
+			continue
+		}
+
+		sort.Strings(val)
+	}
+
+	return m
+}
+
+func sortString(str string) string {
+	runes := []rune(str)
+	slices.Sort(runes)
+	return string(runes)
 }
