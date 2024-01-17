@@ -12,10 +12,6 @@ type EventRepository interface {
 	Create(event model.Event) (int, error)
 	// Delete deletes event. If doesn't exist returns error.
 	Delete(id int) error
-
-	// Фантазия, что 'EventsFor' методы возвращают события по UserId
-	// TODO Comments
-
-	// GetEventsByUserId returns events for time interval
+	// GetByUserId returns events for time interval
 	GetByUserId(userId int, from, to time.Time) ([]model.Event, error)
 }

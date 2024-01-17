@@ -6,8 +6,6 @@ import (
 	"net/http"
 )
 
-// TODO
-
 var defaultHeaders = map[string]string{
 	"Content-Type": "application/json",
 }
