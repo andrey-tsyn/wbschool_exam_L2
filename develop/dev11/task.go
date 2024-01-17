@@ -1,7 +1,7 @@
 package main
 
 /*
-=== HTTP server ===
+=== HTTP api ===
 
 Реализовать HTTP сервер для работы с календарем. В рамках задания необходимо работать строго со стандартной HTTP библиотекой.
 В рамках задания необходимо:
@@ -22,6 +22,49 @@ package main
 	4. Код должен проходить проверки go vet и golint.
 */
 
-func main() {
+import (
+	"fmt"
+	"github.com/caarlos0/env/v10"
+	"github.com/joho/godotenv"
+	log "github.com/sirupsen/logrus"
+	"os"
+	"task11/internal/api"
+	"task11/internal/configuration"
+	"task11/internal/infrastructure/data/in_memory"
+)
 
+func main() {
+	if err := godotenv.Load("configuration/.env"); err != nil {
+		fmt.Printf("%s\n", err.Error())
+	}
+
+	cfg := configuration.Config{}
+	if err := env.Parse(&cfg); err != nil {
+		panic("Can't read config.")
+	}
+
+	initLogger(&cfg)
+
+	repos := map[string]interface{}{
+		"event": in_memory.NewInMemoryEventRepository(),
+	}
+
+	api.StartServer(cfg, repos)
+}
+
+func initLogger(cfg *configuration.Config) {
+	log.SetOutput(os.Stdout)
+
+	if cfg.Environment == "dev" {
+		log.SetFormatter(&log.TextFormatter{})
+	} else {
+		log.SetFormatter(&log.JSONFormatter{})
+	}
+
+	if lvl, err := log.ParseLevel(cfg.LogLevel); err != nil {
+		log.SetLevel(log.InfoLevel)
+		log.Warn("Log level is incorrect, switching to info log mode.")
+	} else {
+		log.SetLevel(lvl)
+	}
 }
